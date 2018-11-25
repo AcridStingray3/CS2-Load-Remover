@@ -25,6 +25,7 @@ state ("ed8_2_PC_US") {
 
 startup {
 
+	settings.Add("reset", false, "Enable resetting");
 	settings.Add("load_removing", true, "Enable load removing");
 	settings.Add("remove_cutscenes", false, "Stop the timer during cutscenes too", "load_removing");
 
@@ -39,7 +40,7 @@ start {
 
 reset { //there's no way this goes wrong right?
 
-	return current.mainMenu == 54; 
+	return (settings["reset"] && current.mainMenu != 0); 
 
 }
 
