@@ -10,8 +10,9 @@ state ("ed8_2_PC_US") {
 	byte tutorialCard4 : "ed8_2_PC_US.exe", 0x76A232; //there's 4 variables because the game seems to number the amount of cards in any one tutorial and then call upon this when they're on screen, rather than on one universal variable. 4 is the max amount of cards I've found yet in any one tutorial
 	byte resultsCard : "ed8_2_PC_US.exe", 0x7F05CF; // I don't actually know what this address tracks, but it doesn't really matter. It seems to take a value between 15 and 25 when on a result card, and stays at 0 otherwise, which is what really matters in this case
 	byte checkingQuests : "ed8_2_PC_US.exe", 0x7F057A; //0 when no quests on screen, 1 when seeing names, 2 when seeing quest description.
+    byte orbmentHeal : "ed8_2_PC_US.exe", 0x005DCE4C, 0x8A8; 
 
-	// byte sceneLoadFlag : "ed8_2_PC_US.exe", 0x5A0CFF; //Made kinda useless by removing time based on black screens rather than actual loads, but that feels nicer user experience wise and it's easier to see when it fails. Added as a backup, since only fade outs seems to sometimes advance the timer by 0.07
+	byte sceneLoadFlag : "ed8_2_PC_US.exe", 0x5A0CFF; //Made kinda useless by removing time based on black screens rather than actual loads, but that feels nicer user experience wise and it's easier to see when it fails. Added as a backup, since only fade outs seems to sometimes advance the timer by 0.07
 
 	byte cutsceneFlag : "ed8_2_PC_US.exe", 0x665AFF;
 
@@ -21,7 +22,7 @@ state ("ed8_2_PC_US") {
 	
 	float selectingParty : "ed8_2_PC_US.exe", 0x24, 0xBC, 0x14, 0x3C, 0x820, 0x5C, 0x1B0, 0x1F4, 0x10, 0xD28;
 	
-	//Bosses health's for splitting defined next
+	//Bosses' healths for splitting defined next
 	
 	//Prologue
 	
@@ -31,11 +32,23 @@ state ("ed8_2_PC_US") {
 	
 	//Act 1 Part 1
 	
-	int Grunoja : 0x00769E5C, 0x4, 0x18, 0xE0, 0x44, 0x1C, 0x14, 0x14, 0xE8, 0x32C, 0x5F0;
-	int XenoI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x4, 0x8, 0x2C, 0x14, 0x1E8, 0x280;
-	int LeonidasI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x4, 0x8, 0x24, 0x1C4, 0x1B4, 0xE60;
+	int Grunoja : 0x00769E5C, 0x50, 0x10, 0x10, 0x4C, 0x8, 0x24, 0x24, 0x278, 0xAA0, 0x2B0;
+	int XenoI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x30, 0x34, 0x8, 0x3C, 0x1C8, 0x280;
+	int LeonidasI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x4, 0x8, 0x48, 0x1C4, 0x1B4, 0xE60;
+	int sword_drakkhen_1_act1_1 : 0x006640B8, 0x4, 0x4, 0x9B8, 0x8EC, 0xB4, 0x38C, 0x14, 0x8, 0x0, 0x870;
+	int sword_drakkhen_2_act1_1 : 0x005DCE40, 0x10, 0x30, 0x2C, 0x8FC, 0xB8, 0x38C, 0x14, 0x8, 0x0, 0x800;
+	int gun_drakkhen_act1_1 : 0x006640B8, 0x9B8, 0x4, 0xA8, 0x2C, 0x2C8, 0x24, 0x1C4, 0x1B4, 0x218, 0xC70;
 	
-
+	//Act 1 Part 2
+	
+	int Unsurtr : 0x00667014, 0x24, 0x40, 0x74, 0x4, 0xA8, 0x34, 0x750, 0x10, 0x40, 0x280;
+	int BleublancI : 0x00667040, 0x50, 0x10, 0x5C, 0x28, 0x4, 0x4, 0x40, 0x10, 0x10, 0xA50;
+	int AltinaI : 0x0066704C, 0x60, 0x24, 0x8, 0x18, 0x60, 0x1C, 0x34, 0x14, 0x38, 0x82C;
+	int sword_drakkhen_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xA8, 0x34, 0x8EC, 0xF0, 0x14, 0x8, 0x0, 0x630;
+	int gun_drakkhen_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xE8, 0xC, 0x4, 0x2C, 0x8, 0xA8, 0x44, 0x280;
+	int sword_spiegel_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xE0, 0x14, 0x30, 0x10, 0x10, 0x14, 0x9B0;
+	
+	//Act 1 Part 3
 
 }
 
@@ -54,10 +67,17 @@ startup {
 
 	
 	settings.Add("act1_splitting", true, "Autosplit during Act 1");
+	
 	    settings.Add("act1_part1", true, "Autosplit during part 1", "act1_splitting");
-	        settings.Add("grunoja", false, "Split Grunoja", "act1_part1");
-	        settings.Add("xenoLeoI", true, "Split on Xeno and Leo", "act1_part1");
-
+	        settings.Add("grunoja", true, "Split Grunoja", "act1_part1");
+	        settings.Add("xenoLeoI", true, "Split Xeno and Leo", "act1_part1");
+	        settings.Add("act1Part1Mech", true, "Split the mech fight. Assumes you kill the right guy first (before the cutscene happens)", "act1_part1");
+	        
+	    settings.Add("act1_part2", true, "Autosplit during part 2", "act1_splitting");
+	        settings.Add("unsurtr", true, "Split Unsurtr (Ice Dragon)", "act1_part2");
+	        settings.Add("bleuAltina", true, "Split Bleublanc and Altina. Won't account for adds", "act1_part2");
+	        settings.Add("act1Part2Mech", true, "Split the mech fight", "act1_part2");
+	        
 }
 
 start {
@@ -68,19 +88,19 @@ start {
 
 split {
 
-    print ("Ortheim I is" + current.OrtheimI);
-    print ("Ortheim II is" + current.OrtheimII);
-    print ("MechaOrtheim is" + current.OrtheimMecha);
-    print ("Grunoja is" + current.Grunoja);
-    print ("Xeno is" + current.XenoI);
-    print ("Leo is" + current.LeonidasI);
-                    
     return ( settings["ortheimI"] && current.OrtheimI == 0 && old.OrtheimI != 0 ||
              settings["ortheimII"] && current.OrtheimII == 0 && old.OrtheimII != 0 ||
              settings["ortheimMecha"] && current.OrtheimMecha == 0 && old.OrtheimMecha != 0 ||
              
              settings["grunoja"] && current.Grunoja == 0 && old.Grunoja != 0 ||
-             settings["xenoLeoI"] && current.XenoI == 0 && current.LeonidasI == 0 && (old.XenoI != 0 || old.LeonidasI != 0)
+             settings["xenoLeoI"] && current.XenoI == 0 && current.LeonidasI == 0 && (old.XenoI != 0 || old.LeonidasI != 0) ||
+             settings["act1Part1Mech"] && current.sword_drakkhen_1_act1_1 == 0 && current.sword_drakkhen_2_act1_1 == 0 && current.gun_drakkhen_act1_1 == 0 && (old.sword_drakkhen_1_act1_1 != 0 || old.sword_drakkhen_2_act1_1 != 0 || old.gun_drakkhen_act1_1 != 0) ||
+             
+             settings["unsurtr"] && current.Unsurtr == 0 && old.Unsurtr != 0 ||
+             settings["bleuAltina"] && current.BleublancI == 0 && current.AltinaI == 0 && (old.BleublancI != 0 || old.AltinaI != 0) ||
+             settings["act1Part2Mech"] && current.sword_drakkhen_act1_2 == 0 && current.sword_spiegel_act1_2 == 0 && current.gun_drakkhen_act1_2 == 0 && (old.sword_drakkhen_act1_2 != 0 || old.sword_spiegel_act1_2 != 0 || old.gun_drakkhen_act1_2 != 0)
+                          
+             
              
             );
 }
@@ -89,9 +109,9 @@ split {
 
 isLoading {
 
-	return( settings["load_removing"]    &&
-		current.loadingSavefile != 0 ||
-		//current.sceneLoadFlag != 0   ||
-		settings["remove_cutscenes"] && current.cutsceneFlag != 0 && current.resultsCard == 0 ||
-		current.fadeToBlack == 03  && current.textOnScreen == 0 && current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0);
+	return( settings["load_removing"]        &&
+		    current.loadingSavefile != 0     ||
+		    current.sceneLoadFlag != 0       ||
+		    settings["remove_cutscenes"] && current.cutsceneFlag != 0 && current.resultsCard == 0 ||
+		    current.fadeToBlack == 03  && current.orbmentHeal != 3 && current.textOnScreen == 0 && current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0);
 }
