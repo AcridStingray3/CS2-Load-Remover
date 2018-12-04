@@ -20,7 +20,7 @@ state ("ed8_2_PC_US") {
 
 	byte mainMenu : "ed8_2_PC_US.exe", 0x664D2A;
 	
-	float selectingParty : "ed8_2_PC_US.exe", 0x24, 0xBC, 0x14, 0x3C, 0x820, 0x5C, 0x1B0, 0x1F4, 0x10, 0xD28;
+	//float selectingParty : "ed8_2_PC_US.exe", 0x24, 0xBC, 0x14, 0x3C, 0x820, 0x5C, 0x1B0, 0x1F4, 0x10, 0xD28;
 	
 	//Bosses' healths for splitting defined next
 	
@@ -35,7 +35,7 @@ state ("ed8_2_PC_US") {
 	int Grunoja : 0x00769E5C, 0x50, 0x10, 0x10, 0x4C, 0x8, 0x24, 0x24, 0x278, 0xAA0, 0x2B0;
 	int XenoI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x30, 0x34, 0x8, 0x3C, 0x1C8, 0x280;
 	int LeonidasI : 0x00667034, 0x50, 0x10, 0x34, 0x4, 0x4, 0x8, 0x48, 0x1C4, 0x1B4, 0xE60;
-	int sword_drakkhen_1_act1_1 : 0x006640B8, 0x4, 0x4, 0x9B8, 0x8EC, 0xB4, 0x38C, 0x14, 0x8, 0x0, 0x870;
+	int sword_drakkhen_1_act1_1 : 0x006640B8, 0x4, 0x4, 0x9B8, 0x8EC, 0xB4, 0x38C, 0x14, 0x8, 0x0, 0x870; //honestly this is pretty useless since once you kill this guy it's a completely different fight instance but whatever
 	int sword_drakkhen_2_act1_1 : 0x005DCE40, 0x10, 0x30, 0x2C, 0x8FC, 0xB8, 0x38C, 0x14, 0x8, 0x0, 0x800;
 	int gun_drakkhen_act1_1 : 0x006640B8, 0x9B8, 0x4, 0xA8, 0x2C, 0x2C8, 0x24, 0x1C4, 0x1B4, 0x218, 0xC70;
 	
@@ -46,9 +46,20 @@ state ("ed8_2_PC_US") {
 	int AltinaI : 0x0066704C, 0x60, 0x24, 0x8, 0x18, 0x60, 0x1C, 0x34, 0x14, 0x38, 0x82C;
 	int sword_drakkhen_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xA8, 0x34, 0x8EC, 0xF0, 0x14, 0x8, 0x0, 0x630;
 	int gun_drakkhen_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xE8, 0xC, 0x4, 0x2C, 0x8, 0xA8, 0x44, 0x280;
-	int sword_spiegel_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xE0, 0x14, 0x30, 0x10, 0x10, 0x14, 0x9B0;
+	int sword_spiegel_act1_2 : 0x006640B8, 0x9B8, 0x4, 0xA8, 0x44, 0x4, 0xE0, 0x1C, 0x10, 0x14, 0x9B0;
 	
 	//Act 1 Part 3
+
+    int Zelvenom : 0x00667000, 0x24, 0x50, 0x74, 0x4, 0xE0, 0x24, 0x20, 0x10, 0x14, 0x800;
+    int Jusis : 0x006640B8, 0x4, 0x4, 0x1E0, 0x3AC, 0x10, 0x10, 0x28, 0x1B8, 0x280;
+    int McBurnI : 0x006679EC, 0x5D4, 0x4, 0xE8, 0x30, 0x2C, 0x30, 0x24, 0x8, 0xC4, 0x87C; //McBurn literally can't die so keeping track of Duvalie is pointless
+    int hector_act1_3 : 0x006640B4, 0x0, 0x2C4, 0x40, 0x50, 0x34, 0x54, 0x20, 0x14, 0xE4, 0x77C;
+    int tank_act1_3 : 0x006640B4, 0x0, 0x2B8, 0xC, 0x64, 0x34, 0x20, 0x14, 0x2C, 0x9B8, 0x280;
+    
+    //Intermission
+    
+    int Rufus : 0x00666FF0, 0x48, 0x14, 0x4, 0x310, 0xCEC, 0x30, 0x10, 0x8, 0x820;
+    int OrdineI : 0x006640B8, 0x4, 0x4, 0x9B8, 0x8EC, 0xF0, 0x10, 0x8, 0x24, 0xA80;
 
 }
 
@@ -77,6 +88,16 @@ startup {
 	        settings.Add("unsurtr", true, "Split Unsurtr (Ice Dragon)", "act1_part2");
 	        settings.Add("bleuAltina", true, "Split Bleublanc and Altina. Won't account for adds", "act1_part2");
 	        settings.Add("act1Part2Mech", true, "Split the mech fight", "act1_part2");
+	    
+	    settings.Add("act1_part3", true, "Autosplit during part 3", "act1_splitting");
+	        settings.Add("zelvenom", true, "Split Zelvenom", "act1_part3");
+	        settings.Add("jusis", true, "Split Jusis", "act1_part3");
+	        settings.Add("mcBurnI", true, "Split the McBurn/Duvalie fight", "act1_part3");
+	        settings.Add("act1Part3Mech", true, "Split the mech fight", "act1_part3");
+	
+	settings.Add ("intermission_splitting", true, "Autosplit during intermission");
+	    settings.Add("rufus", true, "Split Rufus", "intermission_splitting");
+	    settings.Add("ordineI", true, "Split the Crow mech fight", "intermission_splitting");
 	        
 }
 
@@ -98,11 +119,16 @@ split {
              
              settings["unsurtr"] && current.Unsurtr == 0 && old.Unsurtr != 0 ||
              settings["bleuAltina"] && current.BleublancI == 0 && current.AltinaI == 0 && (old.BleublancI != 0 || old.AltinaI != 0) ||
-             settings["act1Part2Mech"] && current.sword_drakkhen_act1_2 == 0 && current.sword_spiegel_act1_2 == 0 && current.gun_drakkhen_act1_2 == 0 && (old.sword_drakkhen_act1_2 != 0 || old.sword_spiegel_act1_2 != 0 || old.gun_drakkhen_act1_2 != 0)
-                          
+             settings["act1Part2Mech"] && current.sword_drakkhen_act1_2 == 0 && current.sword_spiegel_act1_2 == 0 && current.gun_drakkhen_act1_2 == 0 && (old.sword_drakkhen_act1_2 != 0 || old.sword_spiegel_act1_2 != 0 || old.gun_drakkhen_act1_2 != 0) ||
              
+             settings["zelvenom"] && current.Zelvenom == 0 && old.Zelvenom != 0 ||    
+             settings["jusis"] && current.Jusis == 0 && old.Jusis != 0 ||        
+             settings["mcBurnI"] && current.McBurnI == 0 && old.McBurnI != 0 || 
+             settings["act1Part3Mech"] && current.hector_act1_3 == 0 && current.tank_act1_3 == 0 && (old.hector_act1_3 != 0 || old.tank_act1_3 != 0) ||
              
-            );
+             settings["rufus"] && current.Rufus == 0 && old.Rufus != 0 ||
+             settings["ordineI"] && current.OrdineI == 0 && old.OrdineI != 0 );  
+                                 
 }
 
 
