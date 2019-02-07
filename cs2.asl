@@ -20,8 +20,14 @@ state ("ed8_2_PC_US", "v1.4") {
 
 	byte mainMenu : "ed8_2_PC_US.exe", 0x664D2A;
 	
-	byte battleID : 0x00662E88, 0x6550;
+	byte currentPart : "ed8_2_PC_US.exe", 0x6659CC;
 	
+	short battleID : 0x00662E88, 0x6550;
+	
+	byte finalCards : "ed8_2_PC_US.exe", 0x7F05D4;  //these are the red cards at the end of each part. 
+                                                    //It's also definitely part of an animation system so what I do is a bitwise AND to pull a part that *seems* to only be used for those last cards. Honestly big mess.
+ 
+    byte actEnd: "ed8_2_PC_US.exe", 0x664D08;                                                 	
 }
 
 state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
@@ -46,9 +52,14 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
 
 	byte mainMenu : "ed8_2_PC_US.exe", 0x67ED6A;
 	
-	byte battleID : 0x0067CED8, 0x6550;
+	byte currentPart : "ed8_2_PC_US.exe", 0x67FA0C;
+	
+	short battleID : 0x0067CED8, 0x6550;
+	
+	byte finalCards : "ed8_2_PC_US.exe", 0x80A614; 
 
-
+    byte actEnd: "ed8_2_PC_US.exe", 0x67ED48;
+    	
 
 }
 
@@ -57,51 +68,131 @@ startup {
 	settings.Add("load_removing", true, "Enable load removing");
 	settings.Add("remove_cutscenes", false, "Stop the timer during cutscenes too", "load_removing");
 	
-	//splits
+	//parts
 	
-	settings.Add("prologue_splitting", true, "Autosplit during prologue");
-	    settings.Add("ortheimI", true, "Split the first Ortheim fight", "prologue_splitting");
-	    settings.Add("ortheimII", true, "Split the second Ortheim fight", "prologue_splitting");
-	    settings.Add("ortheimMecha", true, "Split the Valimar Ortheim fight", "prologue_splitting");
-
-	
-	settings.Add("act1_splitting", true, "Autosplit during Act 1");
-	
-	    settings.Add("act1_part1", true, "Autosplit during part 1", "act1_splitting");
-	        settings.Add("grunoja", true, "Split Grunoja", "act1_part1");
-	        settings.Add("xenoLeoI", true, "Split Xeno and Leo", "act1_part1");
-	        settings.Add("act1Part1Mech", true, "Split the mech fight", "act1_part1");
-	        
-	    settings.Add("act1_part2", true, "Autosplit during part 2", "act1_splitting");
-	        settings.Add("unsurtr", true, "Split Unsurtr (Ice Dragon)", "act1_part2");
-	        settings.Add("bleuAltina", true, "Split Bleublanc and Altina. Won't account for adds", "act1_part2");
-	        settings.Add("act1Part2Mech", true, "Split the mech fight", "act1_part2");
-	    
-	    settings.Add("act1_part3", true, "Autosplit during part 3", "act1_splitting");
-	        settings.Add("zelvenom", true, "Split Zelvenom", "act1_part3");
-	        settings.Add("jusis", true, "Split Jusis", "act1_part3");
-	        settings.Add("mcBurnI", true, "Split the McBurn/Duvalie fight", "act1_part3");
-	        settings.Add("act1Part3Mech", true, "Split the mech fight", "act1_part3");
-	
-	settings.Add ("loss", true, "Autosplit the row of losses before intermission");
-	    settings.Add("rufus", true, "Split Rufus", "loss");
-	    settings.Add("ordineI", true, "Split the Crow mech fight", "loss");
-	
-	settings.Add ("intermission", true, "Autosplit during Intermission");
-	    settings.Add("bleuDuvalie", true, "Split the Bleublanc/Duvalie fight", "intermission");
-	    settings.Add("crowI", true, "Split the Crow fight", "intermission");
+	settings.Add("partSplit", true, "Split part ends");
+	settings.CurrentDefaultParent = "partSplit";
+	    settings.Add("prologue_part", true, "Autosplit prologue end");
+	    settings.Add("act1_part1_part", true, "Autosplit act 1 part 1 end");
+	    settings.Add("act1_part2_part", true, "Autosplit act 1 part 2 end");
+	    settings.Add("act1_part3_part", true, "Autosplit act 1 part 3 end");
+	    settings.Add("act1_part4_part", true, "Autosplit act 1 part 4 end");
+	    settings.Add("intermission_part", true, "Autosplit intermission end");
+	    settings.Add("act2_part1_part", true, "Autosplit act 2 part 1 end");
+	    settings.Add("act2_part2_part", true, "Autosplit act 2 part 2 end");
+	    settings.Add("act2_part3_part", true, "Autosplit act 2 part 3 end");
+	    settings.Add("act2_part4_part", true, "Autosplit act 2 part 4 end");
+	    settings.Add("finale_part", true, "Autosplit finale end");
+	    settings.Add("divertissement_part", true, "Autosplit divertissement end");
+	 	    
+	//enemies
+	settings.CurrentDefaultParent = null;
+	settings.Add ("enemy_splitting", true, "Enable/Disable automatic boss splits");
+	settings.CurrentDefaultParent = "enemy_splitting";
+        settings.Add("prologue_splitting", true, "Autosplit during prologue");
+            settings.Add("ortheimI", true, "Split the first Ortheim fight", "prologue_splitting");
+            settings.Add("ortheimII", true, "Split the second Ortheim fight", "prologue_splitting");
+            settings.Add("ortheimMecha", true, "Split the Valimar Ortheim fight", "prologue_splitting");
+        
+        settings.Add("act1_splitting", true, "Autosplit during Act 1");
+        
+            settings.Add("act1_part1", true, "Autosplit during part 1", "act1_splitting");
+                settings.Add("grunoja", true, "Split Grunoja", "act1_part1");
+                settings.Add("xenoLeoI", true, "Split Xeno and Leo", "act1_part1");
+                settings.Add("act1Part1Mech", true, "Split the mech fight", "act1_part1");
+                
+            settings.Add("act1_part2", true, "Autosplit during part 2", "act1_splitting");
+                settings.Add("unsurtr", true, "Split Unsurtr (Ice Dragon)", "act1_part2");
+                settings.Add("bleuAltina", true, "Split Bleublanc and Altina.", "act1_part2");
+                settings.Add("act1Part2Mech", true, "Split the mech fight", "act1_part2");
+            
+            settings.Add("act1_part3", true, "Autosplit during part 3", "act1_splitting");
+                settings.Add("zelvenom", true, "Split Zelvenom", "act1_part3");
+                settings.Add("jusis", true, "Split Jusis", "act1_part3");
+                settings.Add("mcBurnI", true, "Split the McBurn/Duvalie fight", "act1_part3");
+                settings.Add("act1Part3Mech", true, "Split the mech fight", "act1_part3");
+        
+        settings.Add ("loss", true, "Autosplit the row of losses before intermission");
+            settings.Add("rufus", false, "Split Rufus", "loss");
+            settings.Add("ordineI", false, "Split the Crow mech fight", "loss");
+        
+        settings.Add ("intermission", true, "Autosplit during Intermission");
+            settings.Add("bleuDuvalieI", true, "Split the Bleublanc/Duvalie fight", "intermission");
+            settings.Add("crowI", true, "Split the Crow fight", "intermission");
+        
+        settings.Add("act2_splitting", true, "Autosplit during Act 2");
+        	
+        	    settings.Add("act2_part1", true, "Autosplit during part 1", "act2_splitting");
+        	        settings.Add("ortheimIII", true, "Split Ortheim", "act2_part1");
+        	        settings.Add("act2Part1Mech", true, "Split the mech fight", "act2_part1");
+        	        settings.Add("doggos", true, "Split the Gaiser Doven (Dogs)", "act2_part1");
+        	        
+        	    settings.Add("act2_part2", true, "Autosplit during part 2", "act2_splitting");
+        	        settings.Add("neithardt", false, "Split the Neithardt fight", "act2_part2");
+        	        settings.Add("worms", true, "Split the Abyss Worms (Quest monster).", "act2_part2");
+        	        settings.Add("train", true, "Split the last train fight", "act2_part2");
+        	        settings.Add("samurai", true, "Split the Regenenkopf Type-0 fight (Samurai mech)", "act2_part2");
+        	        settings.Add("vulcan", true, "Split the Goliath fight (Vulcan mech)", "act2_part2");
+        	        
+        	    settings.Add("act2_part3", true, "Autosplit during part 3", "act2_splitting");
+                    settings.Add("direwolf", true, "Split Magic Knight Direwolf (Ignis Shrine)", "act2_part3");
+                    settings.Add("scarlet", true, "Split the Krestel fight (Scarlet mech)", "act2_part3");
+                    settings.Add("duvalie", true, "Split the Duvalie fight", "act2_part3");
+                    
+        	    settings.Add("act2_part4", true, "Autosplit during part 4", "act2_splitting");
+                    settings.Add("ruby", true, "Split Magic Knight Heavy Ruby(Aqua Shrine)", "act2_part4");
+                    settings.Add("isra", true, "Split Magic Knight Isra-Zeriel (Aria shrine)", "act2_part4");
+                    settings.Add("grianos", true, "Split Grianos-Aura ", "act2_part4");   
+                    settings.Add("trista_mech", true, "Split the retaking Trista mech fight", "act2_part4");
+                    settings.Add("patrick", false, "Split the Patrick fight", "act2_part4");
+                    
+        settings.Add("finale", true, "Autosplit during finale");
+            settings.Add("lindbaum", true, "Split Lindbaum (Roar Cryptid)", "finale");
+            settings.Add("villa", true, "Split the last villa soldier fight", "finale");
+            settings.Add("altina", true, "Split Altina", "finale");
+            settings.Add("castle_first", true, "Split the first castle fight", "finale");
+            settings.Add("bleuDuvalieII", true, "Split Duvalie/Bleublanc", "finale");
+            settings.Add("xenoLeoII", true, "Split the Xeno and Leo", "finale");
+            settings.Add("lichI", false, "Split the first Lich", "finale");
+            settings.Add("lichII", false, "Split the second Lich", "finale");
+            settings.Add("mcBurnII", true, "Split McBurn", "finale");
+            settings.Add("crowVita", true, "Split Crow and Vita", "finale");
+            settings.Add("ordineII", true, "Split Ordine (Crow mech fight)", "finale");
+            settings.Add("vermillionI", false, "Split the first part of the Vermillion fight", "finale");
+            settings.Add("vermillionII", true, "Split the second part of the Vermillion fight", "finale");
+            settings.Add("mechVermillion", true, "Split the mech Vermillion fight", "finale");
+                    
+        settings.Add("divertissement", true, "Autosplit during divertissement");
+             settings.Add("rean", true, "Split Rean and Altina", "divertissement");
+             
+        settings.Add("epilogue", true, "Autosplit during epilogue");
+             settings.Add("vandyck", true, "Split the Vandyck fight", "epilogue");
+             settings.Add("cryptids", false, "Split the Cryptid midbosses", "epilogue");
+             settings.Add("loa", true, "Split Loa Luciferia", "epilogue");            
 }
 
 
 init {
 
-    if (modules.First().ModuleMemorySize == 0xD8B000)
+    if (modules.First().ModuleMemorySize == 0xD8B000){
         version = "v1.4";
-    else if (modules.First().ModuleMemorySize == 0xD9B000)
+    }
+    else if (modules.First().ModuleMemorySize == 0xD9B000){
         version = "v1.4.1";
+    }
+    if (settings["partSplit"])
+        vars.act2part = 0;
+    if (settings["direwolf"] || settings["ruby"] || settings["isra"])
+        vars.act2Knights = 0;
 }
 
+update{
 
+    if(timer.CurrentPhase == TimerPhase.NotRunning)
+        vars.act2part = 0;
+        vars.act2Knights = 0;
+
+}
 
 
 start {
@@ -111,77 +202,191 @@ start {
 }
 
 split {
-
+    
+    //this right here is the enemy splits. It would be way better if instead of a huge switch I could just make like a dictionary where I do battle ID --> Setting, but apparently I have no way of accessing the settings dictionary itself
+    
     if(current.battleID == 0 && old.battleID != 0 && current.battleID != null && current.startHelper != 255){ //The first two checks check that a battle just ended. The last two check that it ended normally and not through a forced quitout or a "Return to main menu" loss
     
-      switch((byte)old.battleID){ //even though it was defined as byte we have to cast it into byte again because the script turned it into an State object???
+      switch((short)old.battleID){ //even though it was defined as short we have to cast it into short again because the script turned it into an State object
         
 	//Prologue
-        case 100: 
-              print ("Ortheim I");
+        case 100:
               return settings["ortheimI"];
         case 101:
-              print ("Ortheim II");
               return settings["ortheimII"];
-        case 232:
-              print ("Ortheim Mecha");
+        case 1000:
               return settings["ortheimMecha"];
             
 	//Act 1 Part 1 
         case 14:
-              print ("Grunoja");
               return settings["grunoja"];
-        case 201: 
-              print ("Xeno and Leo");
+        case 201:
               return settings["xenoLeoI"];
-        case 243:
-              print ("Act 1 Part 1 Mech");
+        case 1011:
               return settings["act1Part1Mech"];
               
 	//Act 1 Part 2
         case 205:
-              print ("Unsurtr");
               return settings["unsurtr"];
         case 209:
-              print ("Bleublanc and Altina");
               return settings["bleuAltina"];
-        case 244: 
-              print ("Act 1 part 2 mech");
+        case 1012: 
               return settings["act1Part2Mech"];
              
 	//Act 1 Part 3
         case 211:
-              print ("Zelvenom");
               return settings["zelvenom"];
         case 213:
-              print ("Jusis");
               return settings["jusis"];
-        case 214:     
-              print ("McBurn");
+        case 214:
               return settings["mcBurnI"];
-        case 245:
-              print ("Act 1 Part 3 Mech");
+        case 1013:
               return settings["act1Part3Mech"];
              
 	//Act 1 Part 4
         case 216:
-              print ("Rufus");
               return settings["rufus"];
-        case 246:
-              print ("Ordine");
+        case 1014:
               return settings["ordineI"];
             
 	//Intermission 
-        case 46:
-              print ("Bleublanc and Duvalie");
-              return settings["bleuDuvalie"];
-        case 47:
-              print ("Crow I");
+        case 302:
+              return settings["bleuDuvalieI"];
+        case 303:
               return settings["crowI"];
-                 
-                                 
+              
+    //Act 2 Part 1
+        case 908:
+              return settings["ortheimIII"];
+        case 1030:
+              return settings["act2Part1Mech"];
+        case 401:
+              return settings["doggos"];
+              
+    //Act 2 Part 2
+        case 1090:
+              return settings["neithardt"];
+        case 909:
+              return settings["worms"];
+        case 420:
+              return settings["train"];
+        case 406:
+              return settings["samurai"];
+        case 1031:
+              return settings["vulcan"];
+              
+    //Act 2 Part 3 (and 4 in the case of magic knights)
+        case 408:
+              if(vars.act2Knights == 0){
+                vars.act2Knights = 1;
+                return settings["direwolf"];
+              }
+              else if (vars.act2Knights == 1){
+                vars.act2Knights = 2;
+                return settings ["ruby"];
+              }
+              else if (vars.act2Knights == 2){
+                return settings ["isra"];
+              }
+              break;
+              
+        case 1032:
+              return settings["scarlet"];
+        case 411:
+              return settings["duvalie"];
+              
+    //Act 2 Part 4
+        case 414:
+              print ("Last train fight");
+              return settings["grianos"];
+        case 1033:
+              return settings["trista_mech"];
+        case 417:
+              return settings["patrick"];
+              
+    //Finale
+        case 804:
+              return settings["lindbaum"];
+         case 504:
+               return settings["villa"];
+         case 506:
+               return settings["altina"];
+         case 507:
+               return settings["castle_first"];
+         case 508:
+               return settings["bleuDuvalieII"];
+         case 509:
+               return settings["xenoLeoII"];
+         case 520:
+               return settings["lichI"];
+         case 521:
+               return settings["lichII"];
+         case 510:
+               return settings["mcBurnII"];
+         case 511:
+               return settings["crowVita"];
+         case 1040:
+               return settings["ordineII"];
+         case 515:
+               return settings["vermillionI"];
+         case 516:
+               return settings["vermillionII"];
+         case 1041:
+               return settings["mechVermillion"];
+               
+    //Divertissement
+        case 603:
+              return settings["rean"];
+     
+    //Epilogue
+        case 925:
+              return settings["vandyck"];
+        case 97:
+              return settings["cryptids"];
+        case 700:
+              return settings["loa"];
+              
+        default: return false;            
+                                    
       }
     }
+    
+    
+    switch((byte)current.currentPart){
+    
+        case 0: return (settings["prologue_part"] && current.actEnd == 0 && old.actEnd == 1);
+        case 2: return (settings["act1_part1_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
+        case 3: return (settings["act1_part2_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
+        case 4: return (settings["act1_part3_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
+        case 5: return (settings["intermission_part"] && current.actEnd == 0 && old.actEnd == 1);
+        case 6:
+               if (((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0))){
+               
+                  if(vars.act2part == 0){
+                    vars.act2part++;
+                    return settings["act2_part1_part"];
+                  }
+                    
+                  if(vars.act2part == 1){
+                    vars.act2part++;
+                    return settings["act2_part2_part"];
+                  }
+                  if(vars.act2part == 2){
+                    vars.act2part++;
+                    return settings["act2_part3_part"];
+                  }
+               }
+               
+               else return (settings["act2_part4_part"] && current.actEnd == 0 && old.actEnd == 1);
+               break;
+        case 9: return (settings["finale_part"] && current.actEnd == 0 && old.actEnd == 1);
+        case 10: return (settings["divertissement_part"] && current.actEnd == 0 && old.actEnd == 1);
+  
+    }
+    
+
+    
+    
 }
 
 isLoading {
@@ -189,6 +394,6 @@ isLoading {
 	return( settings["load_removing"]        &&
 		    current.loadingSavefile != 0     ||
 		    current.sceneLoadFlag != 0       ||
-		    settings["remove_cutscenes"] && current.cutsceneFlag != 0 && current.resultsCard == 0 ||
+		    settings["remove_cutscenes"] && current.cutsceneFlag >= 63 && current.resultsCard == 0 ||
 		    current.fadeToBlack == 03  && current.orbmentHeal != 3 && current.textOnScreen == 0 && current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0);
 }
