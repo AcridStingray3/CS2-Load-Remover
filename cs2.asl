@@ -182,15 +182,21 @@ init {
     }
     if (settings["partSplit"])
         vars.act2part = 0;
+        vars.killedVulcan = false;
+        vars.killedVermillion = false;
     if (settings["direwolf"] || settings["ruby"] || settings["isra"])
         vars.act2Knights = 0;
+        
 }
 
 update{
 
-    if(timer.CurrentPhase == TimerPhase.NotRunning)
+    if(timer.CurrentPhase == TimerPhase.NotRunning){
         vars.act2part = 0;
         vars.act2Knights = 0;
+        vars.killedVulcan = false;
+        vars.killedVermillion = false;
+        }
 
 }
 
@@ -273,6 +279,7 @@ split {
         case 406:
               return settings["samurai"];
         case 1031:
+              vars.killedVulcan = true;
               return settings["vulcan"];
               
     //Act 2 Part 3 (and 4 in the case of magic knights)
@@ -307,7 +314,7 @@ split {
     //Finale
         case 804:
               return settings["lindbaum"];
-         case 504:
+         case 505:
                return settings["villa"];
          case 506:
                return settings["altina"];
@@ -332,6 +339,7 @@ split {
          case 516:
                return settings["vermillionII"];
          case 1041:
+               vars.killedVermillion = true;
                return settings["mechVermillion"];
                
     //Divertissement
@@ -357,7 +365,7 @@ split {
         case 0: return (settings["prologue_part"] && current.actEnd == 0 && old.actEnd == 1);
         case 2: return (settings["act1_part1_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
         case 3: return (settings["act1_part2_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
-        case 4: return (settings["act1_part3_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0)));
+        case 4: return ((settings["act1_part3_part"] && ((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0))) || (settings["act1_part4_part"] && current.actEnd == 0 && old.actEnd == 1));
         case 5: return (settings["intermission_part"] && current.actEnd == 0 && old.actEnd == 1);
         case 6:
                if (((((byte)current.finalCards) & (1 << 5)) == 0 && ((((byte)old.finalCards) & (1 << 5)) != 0))){
@@ -377,10 +385,10 @@ split {
                   }
                }
                
-               else return (settings["act2_part4_part"] && current.actEnd == 0 && old.actEnd == 1);
+               else return (settings["act2_part4_part"] && current.actEnd == 0 && old.actEnd == 1 && vars.killedVulcan);
                break;
-        case 9: return (settings["finale_part"] && current.actEnd == 0 && old.actEnd == 1);
-        case 10: return (settings["divertissement_part"] && current.actEnd == 0 && old.actEnd == 1);
+        case 10: return (settings["finale_part"] && current.actEnd == 0 && old.actEnd == 1 && vars.killedVermillion);
+        case 11: return (settings["divertissement_part"] && current.actEnd == 0 && old.actEnd == 1);
   
     }
     
@@ -390,10 +398,29 @@ split {
 }
 
 isLoading {
+     if(settings["load_removing"]) {
+        if (settings["remove_cutscenes"] && current.cutsceneFlag >= 32 && current.resultsCard == 0) {
+           return true;
+        }
+        
+        else {
+            if (current.fadeToBlack == 03){
+                if (current.loadingSavefile != 0){
+                    print ("save files");
+                    return true;
+                }
+                if (current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0){
+                    print ("loads");
+                    return true;
+                }
+                if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0){
+                    print ("black screen");
+                    return current.currentPart >= 9 || current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
+                }
+                return false;
+         }
 
-	return( settings["load_removing"]        &&
-		    current.loadingSavefile != 0     ||
-		    current.sceneLoadFlag != 0       ||
-		    settings["remove_cutscenes"] && current.cutsceneFlag >= 63 && current.resultsCard == 0 ||
-		    current.fadeToBlack == 03  && current.orbmentHeal != 3 && current.textOnScreen == 0 && current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0);
-}
+        }
+    }     
+}   
+
