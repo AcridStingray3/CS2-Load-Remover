@@ -413,9 +413,9 @@ isLoading {
                     print ("loads");
                     return true;
                 }
-                if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0){
+                if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
                     print ("black screen");
-                    return current.currentPart >= 9 || current.checkingQuests == 0 && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
+                    return current.currentPart >= 9 || && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
                 }
                 return false;
          }
