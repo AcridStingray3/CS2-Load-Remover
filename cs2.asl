@@ -152,7 +152,7 @@ startup {
             settings.Add("altina", true, "Split Altina", "finale");
             settings.Add("castle_first", true, "Split the first castle fight", "finale");
             settings.Add("bleuDuvalieII", true, "Split Duvalie/Bleublanc", "finale");
-            settings.Add("xenoLeoII", true, "Split the Xeno and Leo", "finale");
+            settings.Add("xenoLeoII", true, "Split Xeno and Leo", "finale");
             settings.Add("lichI", false, "Split the first Lich", "finale");
             settings.Add("lichII", false, "Split the second Lich", "finale");
             settings.Add("mcBurnII", true, "Split McBurn", "finale");
@@ -406,16 +406,13 @@ isLoading {
         else {
             if (current.fadeToBlack == 03){
                 if (current.loadingSavefile != 0){
-                    print ("save files");
                     return true;
                 }
                 if (current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0){
-                    print ("loads");
                     return true;
                 }
                 if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
-                    print ("black screen");
-                    return current.currentPart >= 9 || && current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
+                    return current.currentPart >= 9 || current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
                 }
                 return false;
          }
