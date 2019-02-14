@@ -59,6 +59,8 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
 	byte finalCards : "ed8_2_PC_US.exe", 0x80A614; 
 
     byte actEnd: "ed8_2_PC_US.exe", 0x67ED48;
+    
+    ushort bgmID: "ed8_2_PC_US.exe" ,0x783852;
     	
 
 }
@@ -66,7 +68,7 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
 startup {
 
 	settings.Add("load_removing", true, "Enable load removing");
-	settings.Add("remove_cutscenes", false, "Stop the timer during cutscenes too", "load_removing");
+	settings.Add("remove_BGM_change", false, "Stop the timer while the background music is changing", "load_removing");
 	
 	//parts
 	
@@ -174,19 +176,20 @@ startup {
 
 init {
 
-    if (modules.First().ModuleMemorySize == 0xD8B000){
+    if (modules.First().ModuleMemorySize == 0xD8B000)
         version = "v1.4";
-    }
-    else if (modules.First().ModuleMemorySize == 0xD9B000){
+    
+    else if (modules.First().ModuleMemorySize == 0xD9B000)
         version = "v1.4.1";
-    }
+    
     if (settings["partSplit"])
         vars.act2part = 0;
-        vars.killedVulcan = false;
-        vars.killedVermillion = false;
+        
     if (settings["direwolf"] || settings["ruby"] || settings["isra"])
         vars.act2Knights = 0;
-        
+    
+    vars.killedVulcan = false;
+    vars.killedVermillion = false;        
 }
 
 update{
@@ -304,7 +307,6 @@ split {
               
     //Act 2 Part 4
         case 414:
-              print ("Last train fight");
               return settings["grianos"];
         case 1033:
               return settings["trista_mech"];
@@ -314,33 +316,33 @@ split {
     //Finale
         case 804:
               return settings["lindbaum"];
-         case 505:
-               return settings["villa"];
-         case 506:
-               return settings["altina"];
-         case 507:
-               return settings["castle_first"];
-         case 508:
-               return settings["bleuDuvalieII"];
-         case 509:
-               return settings["xenoLeoII"];
-         case 520:
-               return settings["lichI"];
-         case 521:
-               return settings["lichII"];
-         case 510:
-               return settings["mcBurnII"];
-         case 511:
-               return settings["crowVita"];
-         case 1040:
-               return settings["ordineII"];
-         case 515:
-               return settings["vermillionI"];
-         case 516:
-               return settings["vermillionII"];
-         case 1041:
-               vars.killedVermillion = true;
-               return settings["mechVermillion"];
+        case 505:
+              return settings["villa"];
+        case 506:
+              return settings["altina"];
+        case 507:
+              return settings["castle_first"];
+        case 508:
+              return settings["bleuDuvalieII"];
+        case 509:
+              return settings["xenoLeoII"];
+        case 520:
+              return settings["lichI"];
+        case 521:
+              return settings["lichII"];
+        case 510:
+              return settings["mcBurnII"];
+        case 511:
+              return settings["crowVita"];
+        case 1040:
+              return settings["ordineII"];
+        case 515:
+              return settings["vermillionI"];
+        case 516:
+              return settings["vermillionII"];
+        case 1041:
+              vars.killedVermillion = true;
+              return settings["mechVermillion"];
                
     //Divertissement
         case 603:
@@ -379,6 +381,7 @@ split {
                     vars.act2part++;
                     return settings["act2_part2_part"];
                   }
+                  
                   if(vars.act2part == 2){
                     vars.act2part++;
                     return settings["act2_part3_part"];
@@ -399,7 +402,8 @@ split {
 
 isLoading {
      if(settings["load_removing"]) {
-        if (settings["remove_cutscenes"] && current.cutsceneFlag >= 32 && current.resultsCard == 0) {
+     
+        if (settings["remove_BGM_change"] && current.cutsceneFlag > 16 && current.resultsCard == 0 && current.bgmID == 65535 && current.textOnScreen == 0 ) {
            return true;
         }
         
@@ -414,10 +418,11 @@ isLoading {
                 if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
                     return current.currentPart >= 9 || current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
                 }
-                return false;
-         }
+                
+            }
 
         }
     }     
+    return false;
 }   
 

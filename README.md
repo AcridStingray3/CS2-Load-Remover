@@ -1,9 +1,11 @@
 # CS2 Load Remover
-A load remover for The Legend of Heroes: Trails of Cold Steel 2
-
-Split functions were planned for bosses' healths, but this proved to not be quite doable due to the game reusing pointers for other enemies, sometimes to the point where it'd reassign them mid fight, instead of keeping some for exclusively boss fights.
+A load remover and autosplitter for The Legend of Heroes: Trails of Cold Steel 2.
+Able to split most meaningful fights and act/part ends.
 
 # How to Install
+
+Simply hit "Activate" inside the Edit Splits tab on Livesplit, after selecting Trails of Cold Steel 2 as your game.
+Alternatively:
 
 - Open Livesplit, go to Edit Layout > Hit the big "+" > Control > Scriptable Autosplitter.
 
