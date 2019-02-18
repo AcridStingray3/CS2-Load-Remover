@@ -409,10 +409,7 @@ isLoading {
         
         else {
             if (current.fadeToBlack == 03){
-                if (current.loadingSavefile != 0){
-                    return true;
-                }
-                if (current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0){
+                if (current.loadingSavefile != 0 || current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0){
                     return true;
                 }
                 if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
