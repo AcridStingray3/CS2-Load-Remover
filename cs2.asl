@@ -8,6 +8,7 @@ state ("ed8_2_PC_US", "v1.4") {
     byte tutorialCard2 : "ed8_2_PC_US.exe", 0x769FB2;
     byte tutorialCard3 : "ed8_2_PC_US.exe", 0x76A0F2;
     byte tutorialCard4 : "ed8_2_PC_US.exe", 0x76A232; //there's 4 variables because the game seems to number the amount of cards in any one tutorial and then call upon this when they're on screen, rather than on one universal variable. 4 is the max amount of cards I've found yet in any one tutorial
+    byte cardSafety : "ed8_2_PC_US.exe" , 0x769E58;
     byte resultsCard : "ed8_2_PC_US.exe", 0x7F05CF; // I don't actually know what this address tracks, but it doesn't really matter. It seems to take a value between 15 and 25 when on a result card, and stays at 0 otherwise, which is what really matters in this case
     byte checkingQuests : "ed8_2_PC_US.exe", 0x7F057A; //0 when no quests on screen, 1 when seeing names, 2 when seeing quest description.
     byte orbmentHeal : "ed8_2_PC_US.exe", 0x005DCE4C, 0x8A8; //3 if interacting with an orbment station at all
@@ -27,7 +28,9 @@ state ("ed8_2_PC_US", "v1.4") {
     byte finalCards : "ed8_2_PC_US.exe", 0x7F05D4;  //these are the red cards at the end of each part. 
                                                     //It's also definitely part of an animation system so what I do is a bitwise AND to pull a part that *seems* to only be used for those last cards. Honestly big mess.
  
-    byte actEnd: "ed8_2_PC_US.exe", 0x664D08;                                                 	
+    byte actEnd: "ed8_2_PC_US.exe", 0x664D08;   
+    
+    ushort bgmID: "ed8_2_PC_US.exe" ,0x769812;                                              	
 }
 
 state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
@@ -40,6 +43,7 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
     byte tutorialCard2 : "ed8_2_PC_US.exe", 0x783FF2;
     byte tutorialCard3 : "ed8_2_PC_US.exe", 0x784132;
     byte tutorialCard4 : "ed8_2_PC_US.exe", 0x784272;
+    byte cardSafety : "ed8_2_PC_US.exe" , 0x783E98;
     byte resultsCard : "ed8_2_PC_US.exe", 0x80A60F;
     byte checkingQuests : "ed8_2_PC_US.exe", 0x80A5BA;
     byte orbmentHeal : "ed8_2_PC_US.exe", 0x0067E0F8, 0x3F8;
@@ -409,11 +413,20 @@ isLoading {
         
         else {
             if (current.fadeToBlack == 03){
-                if (current.loadingSavefile != 0 || current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0){
+                if (current.loadingSavefile != 0 || current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0)
                     return true;
-                }
+                
                 if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
-                    return current.currentPart >= 9 || current.tutorialCard1 == 0 && current.tutorialCard2 == 0 && current.tutorialCard3 == 0 && current.tutorialCard4 == 0 && current.resultsCard == 0;
+                    if( current.resultsCard != 0)
+                        return false;
+                        
+                    else if (current.currentPart >= 9)
+                        return true;
+                        
+                    else if (current.tutorialCard1 != 0 || current.tutorialCard2 != 0 || current.tutorialCard3 != 0 || current.tutorialCard4 != 0)
+                        return ((((byte)current.cardSafety) & (1 << 2)) == 0);
+                    else
+                        return true;
                 }
                 
             }
