@@ -62,10 +62,11 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
     
     byte finalCards : "ed8_2_PC_US.exe", 0x80A614; 
 
-    byte actEnd: "ed8_2_PC_US.exe", 0x67ED48;
+    byte actEnd : "ed8_2_PC_US.exe", 0x67ED48;
     
-    ushort bgmID: "ed8_2_PC_US.exe" ,0x783852;
-        
+    ushort bgmID : "ed8_2_PC_US.exe" ,0x783852;
+    
+    ushort roomID : "ed8_2_PC_US.exe", 0x67ED88;
 
 }
 
@@ -407,7 +408,7 @@ split {
 isLoading {
      if(settings["load_removing"]) {
      
-        if (settings["remove_BGM_change"] && current.cutsceneFlag > 16 && current.resultsCard == 0 && current.bgmID == 65535 && current.textOnScreen == 0 ) {
+        if (settings["remove_BGM_change"] && current.cutsceneFlag > 16 && current.actEnd == 0 && current.resultsCard == 0 && current.bgmID == 65535 && current.textOnScreen == 0 ) {
            return true;
         }
         
@@ -415,7 +416,8 @@ isLoading {
             if (current.fadeToBlack == 03){
                 if (current.loadingSavefile != 0 || current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0)
                     return true;
-                
+                if (current.roomID == 45912 && current.bgmID == 65535)
+                    return true;
                 if (current.orbmentHeal != 3 && current.textOnScreen == 0 && current.actEnd == 0 && current.checkingQuests == 0){
                     if( current.resultsCard != 0)
                         return false;
