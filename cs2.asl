@@ -30,7 +30,9 @@ state ("ed8_2_PC_US", "v1.4") {
  
     byte actEnd: "ed8_2_PC_US.exe", 0x664D08;   
     
-    ushort bgmID: "ed8_2_PC_US.exe" ,0x769812;                                              	
+    ushort bgmID: "ed8_2_PC_US.exe" ,0x769812;
+    
+                                                 	
 }
 
 state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
@@ -65,6 +67,8 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
     byte actEnd: "ed8_2_PC_US.exe", 0x67ED48;
     
     ushort bgmID: "ed8_2_PC_US.exe" ,0x783852;
+    
+    ushort cutsceneID: 0x005F6E8C, 0x5CF8;
         
 
 }
@@ -72,7 +76,7 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
 startup {
 
     settings.Add("load_removing", true, "Enable load removing");
-    settings.Add("remove_BGM_change", false, "Stop the timer while the background music is changing", "load_removing");
+    settings.Add("remove_BGM_change", true, "Stop the timer while the background music is changing", "load_removing");
     
     //parts
     
@@ -91,7 +95,8 @@ startup {
         settings.Add("finale_part", true, "Autosplit finale end");
         settings.Add("divertissement_part", true, "Autosplit divertissement end");
             
-    //enemies
+    //enemies/cutscenes
+    
     settings.CurrentDefaultParent = null;
     settings.Add ("enemy_splitting", true, "Enable/Disable automatic boss splits");
     settings.CurrentDefaultParent = "enemy_splitting";
@@ -104,6 +109,7 @@ startup {
         
             settings.Add("act1_part1", true, "Autosplit during part 1", "act1_splitting");
                 settings.Add("grunoja", true, "Split Grunoja", "act1_part1");
+                settings.Add("windmill", true, "Split the windmill cutscene after using the radio", "act1_part1");
                 settings.Add("xenoLeoI", true, "Split Xeno and Leo", "act1_part1");
                 settings.Add("act1Part1Mech", true, "Split the mech fight", "act1_part1");
                 
@@ -146,6 +152,7 @@ startup {
                     settings.Add("duvalie", true, "Split the Duvalie fight", "act2_part3");
                     
                 settings.Add("act2_part4", true, "Autosplit during part 4", "act2_splitting");
+                    settings.Add("lindbaum", true, "Split Lindbaum (Roar Cryptid)", "act2_part4");
                     settings.Add("ruby", true, "Split Magic Knight Heavy Ruby(Aqua Shrine)", "act2_part4");
                     settings.Add("isra", true, "Split Magic Knight Isra-Zeriel (Aria shrine)", "act2_part4");
                     settings.Add("grianos", true, "Split Grianos-Aura ", "act2_part4");   
@@ -153,7 +160,6 @@ startup {
                     settings.Add("patrick", false, "Split the Patrick fight", "act2_part4");
                     
         settings.Add("finale", true, "Autosplit during finale");
-            settings.Add("lindbaum", true, "Split Lindbaum (Roar Cryptid)", "finale");
             settings.Add("villa", true, "Split the last villa soldier fight", "finale");
             settings.Add("altina", true, "Split Altina", "finale");
             settings.Add("castle_first", true, "Split the first castle fight", "finale");
@@ -174,7 +180,9 @@ startup {
         settings.Add("epilogue", true, "Autosplit during epilogue");
              settings.Add("vandyck", true, "Split the Vandyck fight", "epilogue");
              settings.Add("cryptids", false, "Split the Cryptid midbosses", "epilogue");
-             settings.Add("loa", true, "Split Loa Luciferia", "epilogue");            
+             settings.Add("loa", true, "Split Loa Luciferia", "epilogue");     
+             
+           
 }
 
 
@@ -310,6 +318,8 @@ split {
               return settings["duvalie"];
               
     //Act 2 Part 4
+        case 804:
+              return settings["lindbaum"];
         case 414:
               return settings["grianos"];
         case 1033:
@@ -318,8 +328,6 @@ split {
               return settings["patrick"];
               
     //Finale
-        case 804:
-              return settings["lindbaum"];
         case 505:
               return settings["villa"];
         case 506:
@@ -365,6 +373,20 @@ split {
       }
     }
     
+    
+    //cutscene splits
+    
+    if(current.cutsceneID == 0 && old.cutsceneID != 0){
+      
+      switch((short)old.cutsceneID){ //even though it was defined as short we have to cast it into short again because the script turned it into an State object
+        
+        case 4122: return settings["windmill"];
+     
+     }
+    }
+         
+    
+   //part splits
     
     switch((byte)current.currentPart){
     
