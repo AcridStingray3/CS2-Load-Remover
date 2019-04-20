@@ -116,6 +116,7 @@ startup {
                 settings.Add("act1Part1Mech", true, "Split the mech fight", "act1_part1");
                 
             settings.Add("act1_part2", true, "Autosplit during part 2", "act1_splitting");
+                settings.Add("nordJaegers", true, "Split the cutscene where Gaius rescues you from Jaegers", "act1_part2");
                 settings.Add("unsurtr", true, "Split Unsurtr (Ice Dragon)", "act1_part2");
                 settings.Add("bleuAltina", true, "Split Bleublanc and Altina.", "act1_part2");
                 settings.Add("act1Part2Mech", true, "Split the mech fight", "act1_part2");
@@ -378,11 +379,13 @@ split {
     
     //cutscene splits
     
-    if(current.cutsceneID == 0 && old.cutsceneID != 0){
+    if(current.cutsceneID != old.cutsceneID){
       
       switch((short)old.cutsceneID){ //even though it was defined as short we have to cast it into short again because the script turned it into an State object
         
         case 4122: return settings["windmill"];
+        case 4160: return settings["nordJaegers"];
+        
      
      }
     }
