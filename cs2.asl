@@ -178,6 +178,8 @@ startup {
             settings.Add("mechVermillion", true, "Split the mech Vermillion fight", "finale");
                     
         settings.Add("divertissement", true, "Autosplit during divertissement");
+             settings.Add("squid", false, "Split the cutscene after the big squid fight", "divertissement");    
+             settings.Add("cutscene_pre_rean_altina", false, "Split entering the cutscene right before the Rean/Altina fight", "divertissement");
              settings.Add("rean", true, "Split Rean and Altina", "divertissement");
              
         settings.Add("epilogue", true, "Autosplit during epilogue");
@@ -381,12 +383,20 @@ split {
     
     if(current.cutsceneID != old.cutsceneID){
       
+      //splits that are on cutscene end
       switch((short)old.cutsceneID){ //even though it was defined as short we have to cast it into short again because the script turned it into an State object
         
         case 4122: return settings["windmill"];
         case 4160: return settings["nordJaegers"];
+        case 20491: return settings["squid"];
         
      
+     }
+     
+     //splits that are on cutscene start
+     switch((short)current.cutsceneID){
+     
+        case 20492: return settings["cutscene_pre_rean_altina"];
      }
     }
          
