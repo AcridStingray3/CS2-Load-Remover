@@ -52,7 +52,8 @@ state ("ed8_2_PC_US", "v1.4.1") { //every address is the 1.4 one + 0x1A040
 
     byte sceneLoadFlag : "ed8_2_PC_US.exe", 0x5BAD3F;
 
-    byte cutsceneFlag : "ed8_2_PC_US.exe", 0x67FB3F; 
+    byte cutsceneFlag : "ed8_2_PC_US.exe", 0x67FB3F;
+    byte fieldCutscenes : 0x67ECC8; 
 
     byte startHelper : "ed8_2_PC_US.exe" , 0x80BF54; 
 
@@ -178,6 +179,8 @@ startup {
             settings.Add("mechVermillion", true, "Split the mech Vermillion fight", "finale");
                     
         settings.Add("divertissement", true, "Autosplit during divertissement");
+             settings.Add("squid", false, "Split the cutscene after the big squid fight", "divertissement");    
+             settings.Add("cutscene_pre_rean_altina", false, "Split entering the cutscene right before the Rean/Altina fight", "divertissement");
              settings.Add("rean", true, "Split Rean and Altina", "divertissement");
              
         settings.Add("epilogue", true, "Autosplit during epilogue");
@@ -381,12 +384,20 @@ split {
     
     if(current.cutsceneID != old.cutsceneID){
       
+      //splits that are on cutscene end
       switch((short)old.cutsceneID){ //even though it was defined as short we have to cast it into short again because the script turned it into an State object
         
         case 4122: return settings["windmill"];
         case 4160: return settings["nordJaegers"];
+        case 20491: return settings["squid"];
         
      
+     }
+     
+     //splits that are on cutscene start
+     switch((short)current.cutsceneID){
+     
+        case 20492: return settings["cutscene_pre_rean_altina"];
      }
     }
          
@@ -439,7 +450,7 @@ isLoading {
         }
         
         else {
-            if (current.fadeToBlack == 03){
+            if (current.fadeToBlack == 03 || (current.fadeToBlack != 0 && current.cutsceneID == 0 && current.fieldCutscenes == 0)){
                 if (current.loadingSavefile != 0 || current.sceneLoadFlag != 0 || old.sceneLoadFlag != 0)
                     return true;
                 if (current.roomID == 45912 && current.bgmID == 65535)
